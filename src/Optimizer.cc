@@ -235,7 +235,7 @@ void Optimizer::BundleAdjustment(const vector<KeyFrame *> &vpKFs, const vector<M
     }
 
 }
-
+//optimization in Reference kyframe
 int Optimizer::PoseOptimization(Frame *pFrame)
 {
     g2o::SparseOptimizer optimizer;
@@ -297,6 +297,7 @@ int Optimizer::PoseOptimization(Frame *pFrame)
                 e->setVertex(0, dynamic_cast<g2o::OptimizableGraph::Vertex*>(optimizer.vertex(0)));
                 e->setMeasurement(obs);
                 const float invSigma2 = pFrame->mvInvLevelSigma2[kpUn.octave];
+
                 e->setInformation(Eigen::Matrix2d::Identity()*invSigma2);
 
                 g2o::RobustKernelHuber* rk = new g2o::RobustKernelHuber;
@@ -325,6 +326,7 @@ int Optimizer::PoseOptimization(Frame *pFrame)
                 //SET EDGE
                 Eigen::Matrix<double,3,1> obs;
                 const cv::KeyPoint &kpUn = pFrame->mvKeysUn[i];
+                const float mvProb = pFrame->mvProbs[i];
                 const float &kp_ur = pFrame->mvuRight[i];
                 obs << kpUn.pt.x, kpUn.pt.y, kp_ur;
 
@@ -333,7 +335,11 @@ int Optimizer::PoseOptimization(Frame *pFrame)
                 e->setVertex(0, dynamic_cast<g2o::OptimizableGraph::Vertex*>(optimizer.vertex(0)));
                 e->setMeasurement(obs);
                 const float invSigma2 = pFrame->mvInvLevelSigma2[kpUn.octave];
-                Eigen::Matrix3d Info = Eigen::Matrix3d::Identity()*invSigma2;
+                //PoseOptimization : sigma의 inverse입니다.. 즉 크면 작다라는 뜻이죠. 이걸 변형해볼까요?((1.2)^k의 역수 형태 -> 0.8333^k 즉, mv_prob에 영향받기 쉬움)
+                //영향받기 원하는 방식 : 
+                //1. mv_prob가 높을 수록, 그리고 scale이 작을 수록 영향을 많이 받아야함
+                //2. mvProb가 1이면 기존이랑 같음 
+                Eigen::Matrix3d Info = Eigen::Matrix3d::Identity()*invSigma2*mvProb;
                 e->setInformation(Info);
 
                 g2o::RobustKernelHuber* rk = new g2o::RobustKernelHuber;
@@ -630,7 +636,7 @@ void Optimizer::LocalBundleAdjustment(KeyFrame *pKF, bool* pbStopFlag, Map* pMap
                     e->setVertex(1, dynamic_cast<g2o::OptimizableGraph::Vertex*>(optimizer.vertex(pKFi->mnId)));
                     e->setMeasurement(obs);
                     const float &invSigma2 = pKFi->mvInvLevelSigma2[kpUn.octave];
-                    Eigen::Matrix3d Info = Eigen::Matrix3d::Identity()*invSigma2;
+                    Eigen::Matrix3d Info = Eigen::Matrix3d::Identity()*invSigma2;//2번째 local bundle adjustment
                     e->setInformation(Info);
 
                     g2o::RobustKernelHuber* rk = new g2o::RobustKernelHuber;
@@ -846,6 +852,7 @@ void Optimizer::OptimizeEssentialGraph(Map* pMap, KeyFrame* pLoopKF, KeyFrame* p
 
     set<pair<long unsigned int,long unsigned int> > sInsertedEdges;
 
+    //Essential Graph : 이부분은 자세에 대한 상대 자세만 반영되지 관측치 정보가 들어가지는 않습니다.
     const Eigen::Matrix<double,7,7> matLambda = Eigen::Matrix<double,7,7>::Identity();
 
     // Set Loop edges
@@ -870,7 +877,7 @@ void Optimizer::OptimizeEssentialGraph(Map* pMap, KeyFrame* pLoopKF, KeyFrame* p
             e->setVertex(1, dynamic_cast<g2o::OptimizableGraph::Vertex*>(optimizer.vertex(nIDj)));
             e->setVertex(0, dynamic_cast<g2o::OptimizableGraph::Vertex*>(optimizer.vertex(nIDi)));
             e->setMeasurement(Sji);
-
+            //Essential Graph : 이부분쪽에서 수정되어야합니다.
             e->information() = matLambda;
 
             optimizer.addEdge(e);
@@ -917,7 +924,7 @@ void Optimizer::OptimizeEssentialGraph(Map* pMap, KeyFrame* pLoopKF, KeyFrame* p
             e->setVertex(1, dynamic_cast<g2o::OptimizableGraph::Vertex*>(optimizer.vertex(nIDj)));
             e->setVertex(0, dynamic_cast<g2o::OptimizableGraph::Vertex*>(optimizer.vertex(nIDi)));
             e->setMeasurement(Sji);
-
+            //Essential Graph : 이부분쪽에서 수정되어야합니다.
             e->information() = matLambda;
             optimizer.addEdge(e);
         }
@@ -943,6 +950,7 @@ void Optimizer::OptimizeEssentialGraph(Map* pMap, KeyFrame* pLoopKF, KeyFrame* p
                 el->setVertex(1, dynamic_cast<g2o::OptimizableGraph::Vertex*>(optimizer.vertex(pLKF->mnId)));
                 el->setVertex(0, dynamic_cast<g2o::OptimizableGraph::Vertex*>(optimizer.vertex(nIDi)));
                 el->setMeasurement(Sli);
+                //Essential Graph : 이부분쪽에서 수정되어야합니다.
                 el->information() = matLambda;
                 optimizer.addEdge(el);
             }
@@ -975,6 +983,7 @@ void Optimizer::OptimizeEssentialGraph(Map* pMap, KeyFrame* pLoopKF, KeyFrame* p
                     en->setVertex(1, dynamic_cast<g2o::OptimizableGraph::Vertex*>(optimizer.vertex(pKFn->mnId)));
                     en->setVertex(0, dynamic_cast<g2o::OptimizableGraph::Vertex*>(optimizer.vertex(nIDi)));
                     en->setMeasurement(Sni);
+                    //이부분쪽에서 수정되어야합니다.
                     en->information() = matLambda;
                     optimizer.addEdge(en);
                 }

@@ -117,7 +117,8 @@ public:
     static float invfx;
     static float invfy;
     cv::Mat mDistCoef;
-
+    cv::Mat leftImage;
+    cv::Mat rightIage;
     // Stereo baseline multiplied by fx.
     float mbf;
 
@@ -137,6 +138,9 @@ public:
     std::vector<cv::KeyPoint> mvKeys, mvKeysRight;
     std::vector<cv::KeyPoint> mvKeysUn;
 
+    //hyeongjun_custom
+    std::vector<float> mvProbs;
+    cv::Mat Frame_prob;
     // Corresponding stereo coordinate and depth for each keypoint.
     // "Monocular" keypoints have a negative value.
     std::vector<float> mvuRight;

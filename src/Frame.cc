@@ -57,7 +57,7 @@ Frame::Frame(const Frame &frame)
         SetPose(frame.mTcw);
 }
 
-
+//TODO
 Frame::Frame(const cv::Mat &imLeft, const cv::Mat &imRight, const double &timeStamp, ORBextractor* extractorLeft, ORBextractor* extractorRight, ORBVocabulary* voc, cv::Mat &K, cv::Mat &distCoef, const float &bf, const float &thDepth, LDOD* pLDOD_arg)
     :mpORBvocabulary(voc),mpORBextractorLeft(extractorLeft),mpORBextractorRight(extractorRight), mTimeStamp(timeStamp), mK(K.clone()),mDistCoef(distCoef.clone()), mbf(bf), mThDepth(thDepth),
      mpReferenceKF(static_cast<KeyFrame*>(NULL))
@@ -77,8 +77,11 @@ Frame::Frame(const cv::Mat &imLeft, const cv::Mat &imRight, const double &timeSt
     int image_width = imLeft.cols;
 
     pLDOD = pLDOD_arg;//new LDOD(image_hegiht,image_width);
-    cv::Mat returnMask = pLDOD->GetLeftMask(imLeft);
+    cv::Mat returnMask = pLDOD->GetLeftMask(imLeft);//cv::Mat::ones(imLeft.rows,imLeft.cols,CV_8UC1)*255;//
+    this->leftImage = imLeft;
+    this->rightImage = imRight;
     // ORB extraction
+    this->Frame_prob = returnMask;
     thread threadLeft(&Frame::ExtractORB,this,0,imLeft);
     thread threadRight(&Frame::ExtractORB,this,1,imRight);
     threadLeft.join();
@@ -87,10 +90,16 @@ Frame::Frame(const cv::Mat &imLeft, const cv::Mat &imRight, const double &timeSt
     // mvKeysRight,mDescriptorsRight
 
     N = mvKeys.size();
-
+    
     if(mvKeys.empty())
         return;
-
+    for(int i=0; i<N; i++)
+    {
+        int x = mvKeys[i].pt.x;
+        int y = mvKeys[i].pt.y;
+        float prob_color = returnMask.at<uchar>(y,x);
+        this->mvProbs.push_back(prob_color/255.);
+    }
     UndistortKeyPoints();
 
     ComputeStereoMatches();

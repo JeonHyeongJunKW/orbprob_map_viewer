@@ -2,3 +2,4 @@ build/*
 lib/*
 .vscode/
 Vocabulary
+src/python/__pycache__/runner.cpython-36.pyc

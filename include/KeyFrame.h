@@ -119,7 +119,9 @@ public:
 
     // The following variables are accesed from only 1 thread or never change (no mutex needed).
 public:
-
+    std::vector<float> mvProbs;
+    cv::Mat Frame_prob;
+    
     static long unsigned int nNextId;
     long unsigned int mnId;
     const long unsigned int mnFrameId;
@@ -147,7 +149,8 @@ public:
     long unsigned int mnRelocQuery;
     int mnRelocWords;
     float mRelocScore;
-
+    cv::Mat leftImage;
+    cv::Mat rightImage;
     // Variables used by loop closing
     cv::Mat mTcwGBA;
     cv::Mat mTcwBefGBA;

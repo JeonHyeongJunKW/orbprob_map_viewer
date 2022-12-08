@@ -489,4 +489,47 @@ vector<cv::KeyPoint> System::GetTrackedKeyPointsUn()
     return mTrackedKeyPointsUn;
 }
 
+void System::SaveTrajectoryOctoView(const string &filename)
+{
+    cout << endl << "Saving keyframe id to " << filename << " ..." << endl;
+
+    vector<KeyFrame*> vpKFs = mpMap->GetAllKeyFrames();
+    sort(vpKFs.begin(),vpKFs.end(),KeyFrame::lId);
+
+    // Transform all keyframes so that the first keyframe is at the origin.
+    // After a loop closure the first keyframe might not be at the origin.
+    //cv::Mat Two = vpKFs[0]->GetPoseInverse();
+
+    ofstream f;
+    f.open(filename.c_str());
+    f << fixed;
+
+    for(size_t i=0; i<vpKFs.size(); i++)
+    {
+        KeyFrame* pKF = vpKFs[i];
+
+       // pKF->SetPose(pKF->GetPose()*Two);
+
+        if(pKF->isBad())
+            continue;
+
+        cv::Mat R = pKF->GetRotation().t();
+        vector<float> q = Converter::toQuaternion(R);
+        cv::Mat t = pKF->GetCameraCenter();
+        f << setprecision(6) << pKF->mTimeStamp << setprecision(7) << " " << t.at<float>(0) << " " << t.at<float>(1) << " " << t.at<float>(2)
+          << " " << q[0] << " " << q[1] << " " << q[2] << " " << q[3] << endl;
+
+        //해당 키프레임의 왼쪽/오른쪽 그림과 마스크를 저장합니다. 
+        cv::Mat left = pKF->leftImage;
+        cv::Mat right = pKF->rightImage;
+        cv::Mat left_mask = pKF->Frame_prob;
+        cv::imwrite("resultImage/"+to_string(i)+"left.jpg",left);
+        cv::imwrite("resultImage/"+to_string(i)+"right.jpg",right);
+        cv::imwrite("resultImage/"+to_string(i)+"prob.jpg",left_mask);
+    }
+
+    f.close();
+    cout << endl << "trajectory saved!" << endl;
+}
+
 } //namespace ORB_SLAM

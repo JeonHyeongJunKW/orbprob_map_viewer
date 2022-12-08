@@ -40,7 +40,7 @@ Sim3Solver::Sim3Solver(KeyFrame *pKF1, KeyFrame *pKF2, const vector<MapPoint *> 
     mpKF1 = pKF1;
     mpKF2 = pKF2;
 
-    vector<MapPoint*> vpKeyFrameMP1 = pKF1->GetMapPointMatches();
+    vector<MapPoint*> vpKeyFrameMP1 = pKF1->GetMapPointMatches();//첫번째 키프레임이 가진 매칭 맵포인트
 
     mN1 = vpMatched12.size();
 
@@ -61,7 +61,7 @@ Sim3Solver::Sim3Solver(KeyFrame *pKF1, KeyFrame *pKF2, const vector<MapPoint *> 
     size_t idx=0;
     for(int i1=0; i1<mN1; i1++)
     {
-        if(vpMatched12[i1])
+        if(vpMatched12[i1])//매칭된 3차원점이 두번째에 대해서 있다면
         {
             MapPoint* pMP1 = vpKeyFrameMP1[i1];
             MapPoint* pMP2 = vpMatched12[i1];
@@ -80,12 +80,12 @@ Sim3Solver::Sim3Solver(KeyFrame *pKF1, KeyFrame *pKF2, const vector<MapPoint *> 
 
             const cv::KeyPoint &kp1 = pKF1->mvKeysUn[indexKF1];
             const cv::KeyPoint &kp2 = pKF2->mvKeysUn[indexKF2];
-
+            //각각의 sigma
             const float sigmaSquare1 = pKF1->mvLevelSigma2[kp1.octave];
             const float sigmaSquare2 = pKF2->mvLevelSigma2[kp2.octave];
 
             mvnMaxError1.push_back(9.210*sigmaSquare1);
-            mvnMaxError2.push_back(9.210*sigmaSquare2);
+            mvnMaxError2.push_back(9.210*sigmaSquare2);//sigma값
 
             mvpMapPoints1.push_back(pMP1);
             mvpMapPoints2.push_back(pMP2);
@@ -165,7 +165,7 @@ cv::Mat Sim3Solver::iterate(int nIterations, bool &bNoMore, vector<bool> &vbInli
         // Get min set of points
         for(short i = 0; i < 3; ++i)
         {
-            int randi = DUtils::Random::RandomInt(0, vAvailableIndices.size()-1);
+            int randi = DUtils::Random::RandomInt(0, vAvailableIndices.size()-1);//랜덤인덱스를 얻어옵니다.
 
             int idx = vAvailableIndices[randi];
 

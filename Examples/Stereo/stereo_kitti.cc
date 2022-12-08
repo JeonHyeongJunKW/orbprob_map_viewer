@@ -123,7 +123,10 @@ int main(int argc, char **argv)
 
     // Save camera trajectory
     SLAM.SaveTrajectoryKITTI("CameraTrajectory.txt");
-
+    
+    // Save keyframe trajectory/mask/left/right
+    SLAM.SaveTrajectoryOctoView("KeyFrame_traj.txt")
+    
     return 0;
 }
 

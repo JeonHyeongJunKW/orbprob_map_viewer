@@ -251,7 +251,7 @@ bool LoopClosing::ComputeSim3()
 
     for(int i=0; i<nInitialCandidates; i++)
     {
-        KeyFrame* pKF = mvpEnoughConsistentCandidates[i];
+        KeyFrame* pKF = mvpEnoughConsistentCandidates[i];//초기 관측후보
 
         // avoid that local mapping erase it while it is being processed in this thread
         pKF->SetNotErase();
@@ -273,7 +273,7 @@ bool LoopClosing::ComputeSim3()
         {
             Sim3Solver* pSolver = new Sim3Solver(mpCurrentKF,pKF,vvpMapPointMatches[i],mbFixScale);
             pSolver->SetRansacParameters(0.99,20,300);
-            vpSim3Solvers[i] = pSolver;
+            vpSim3Solvers[i] = pSolver;//각 후보에대한 solver를 설정해둡니다.
         }
 
         nCandidates++;
@@ -298,6 +298,7 @@ bool LoopClosing::ComputeSim3()
             bool bNoMore;
 
             Sim3Solver* pSolver = vpSim3Solvers[i];
+            //RANSAC이 적용되는 부분입니다.
             cv::Mat Scm  = pSolver->iterate(5,bNoMore,vbInliers,nInliers);
 
             // If Ransac reachs max. iterations discard keyframe

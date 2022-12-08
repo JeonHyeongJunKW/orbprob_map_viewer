@@ -1382,6 +1382,7 @@ bool Tracking::Relocalization()
             }
             else
             {
+            //이부분은 반영하기 어렵네요
                 PnPsolver* pSolver = new PnPsolver(mCurrentFrame,vvpMapPointMatches[i]);
                 pSolver->SetRansacParameters(0.99,10,300,4,0.5,5.991);
                 vpPnPsolvers[i] = pSolver;
@@ -1436,7 +1437,7 @@ bool Tracking::Relocalization()
                     else
                         mCurrentFrame.mvpMapPoints[j]=NULL;
                 }
-
+                //최소한으로 반영됩니다.
                 int nGood = Optimizer::PoseOptimization(&mCurrentFrame);
 
                 if(nGood<10)

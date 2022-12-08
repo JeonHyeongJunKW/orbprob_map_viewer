@@ -81,6 +81,6 @@ Mat LDOD::GetLeftMask(Mat g_leftImage)
     PyTuple_SetItem(pArgs,0,gray_mat);//0번째로 인자숫자 1을 넣어줍니다.
     PyObject* mask_result = PyObject_CallObject(this->py_mask_func,pArgs);//결과를얻습니다.
     Mat return_gray(this->image_height, this->image_width, CV_8UC1, PyArray_DATA(mask_result));
-    imshow("mask",return_gray);
+    // imshow("mask",return_gray);
     return return_gray;
 }

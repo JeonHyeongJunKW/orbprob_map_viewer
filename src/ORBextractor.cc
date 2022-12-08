@@ -418,7 +418,7 @@ ORBextractor::ORBextractor(int _nfeatures, float _scaleFactor, int _nlevels,
     mvLevelSigma2[0]=1.0f;
     for(int i=1; i<nlevels; i++)
     {
-        mvScaleFactor[i]=mvScaleFactor[i-1]*scaleFactor;
+        mvScaleFactor[i]=mvScaleFactor[i-1]*scaleFactor;//1.2씩 높아짐..
         mvLevelSigma2[i]=mvScaleFactor[i]*mvScaleFactor[i];
     }
 

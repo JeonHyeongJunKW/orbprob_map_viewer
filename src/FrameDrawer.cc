@@ -103,7 +103,13 @@ cv::Mat FrameDrawer::DrawFrame()
                 pt2.y=vCurrentKeys[i].pt.y+r;
 
                 // This is a match to a MapPoint in the map
-                if(vbMap[i])
+                if(mvCurrentProb[i]<0.5)
+                {
+                    cv::rectangle(im,pt1,pt2,cv::Scalar(0,0,255));
+                    cv::circle(im,vCurrentKeys[i].pt,2,cv::Scalar(0,0,255),-1);
+                    mnTracked++;
+                }
+                else if(vbMap[i])
                 {
                     cv::rectangle(im,pt1,pt2,cv::Scalar(0,255,0));
                     cv::circle(im,vCurrentKeys[i].pt,2,cv::Scalar(0,255,0),-1);
@@ -169,6 +175,7 @@ void FrameDrawer::Update(Tracking *pTracker)
     unique_lock<mutex> lock(mMutex);
     pTracker->mImGray.copyTo(mIm);
     mvCurrentKeys=pTracker->mCurrentFrame.mvKeys;
+    mvCurrentProb =pTracker->mCurrentFrame.mvProbs;
     N = mvCurrentKeys.size();
     mvbVO = vector<bool>(N,false);
     mvbMap = vector<bool>(N,false);
