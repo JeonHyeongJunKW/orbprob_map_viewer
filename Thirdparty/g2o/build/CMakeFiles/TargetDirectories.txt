@@ -1,3 +1,0 @@
-/home/jeon/origin_orbslam2/orbprob_map_viewer/Thirdparty/g2o/build/CMakeFiles/rebuild_cache.dir
-/home/jeon/origin_orbslam2/orbprob_map_viewer/Thirdparty/g2o/build/CMakeFiles/g2o.dir
-/home/jeon/origin_orbslam2/orbprob_map_viewer/Thirdparty/g2o/build/CMakeFiles/edit_cache.dir

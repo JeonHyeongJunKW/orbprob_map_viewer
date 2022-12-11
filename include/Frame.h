@@ -118,7 +118,7 @@ public:
     static float invfy;
     cv::Mat mDistCoef;
     cv::Mat leftImage;
-    cv::Mat rightIage;
+    cv::Mat rightImage;
     // Stereo baseline multiplied by fx.
     float mbf;
 

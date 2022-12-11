@@ -1,5 +1,7 @@
 build/*
 lib/*
 .vscode/
-Vocabulary
 src/python/__pycache__/runner.cpython-36.pyc
+Thirdparty/DBoW2/build
+Thirdparty/g2o/build
+Vocabulary/ORBvoc.txt
