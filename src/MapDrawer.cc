@@ -53,28 +53,39 @@ void MapDrawer::DrawMapPoints()
 
     glPointSize(mPointSize);
     glBegin(GL_POINTS);
-    glColor3f(0.0,0.0,0.0);
+    glColor3f(0.0,1.0,0.0);
 
     for(size_t i=0, iend=vpMPs.size(); i<iend;i++)
     {
         if(vpMPs[i]->isBad() || spRefMPs.count(vpMPs[i]))
             continue;
         cv::Mat pos = vpMPs[i]->GetWorldPos();
+        // vpMPs[i]->mnFirstFrame;//레퍼런스 프레임 id구나
+        if(vpMPs[i]->origin_prob ==0)
+        {
+            glColor3f(1.0,0.0,0.0);
+        }
+        // vpMPs
         glVertex3f(pos.at<float>(0),pos.at<float>(1),pos.at<float>(2));
+        glColor3f(0.0,1.0,0.0);
     }
     glEnd();
 
     glPointSize(mPointSize);
     glBegin(GL_POINTS);
-    glColor3f(1.0,0.0,0.0);
+    glColor3f(0.0,1.0,0.0);
 
     for(set<MapPoint*>::iterator sit=spRefMPs.begin(), send=spRefMPs.end(); sit!=send; sit++)
     {
         if((*sit)->isBad())
             continue;
         cv::Mat pos = (*sit)->GetWorldPos();
+        if((*sit)->origin_prob ==0)
+        {
+            glColor3f(1.0,0.0,0.0);
+        }
         glVertex3f(pos.at<float>(0),pos.at<float>(1),pos.at<float>(2));
-
+        glColor3f(0.0,1.0,0.0);
     }
 
     glEnd();

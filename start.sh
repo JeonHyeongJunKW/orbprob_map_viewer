@@ -1,3 +1,5 @@
 ./build.sh
-./Examples/Stereo/stereo_kitti Vocabulary/ORBvoc.txt Examples/Stereo/KITTI00-02.yaml /home/rail/hyeongjun/Dataset/data_odometry_gray/dataset/sequences/00
+rm -rf resultImage/*
+./Examples/Stereo/stereo_kitti Vocabulary/ORBvoc.txt Examples/Stereo/KITTI00-02.yaml /media/jeon/hard/Kitti_dataset/dataset_gray/sequences/00
+# ./Examples/Stereo/stereo_kitti Vocabulary/ORBvoc.txt Examples/Stereo/KITTI00-02.yaml /media/jeon/hard/Kitti_dataset/dataset/sequences/00/
 

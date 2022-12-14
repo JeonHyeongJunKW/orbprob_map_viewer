@@ -20,9 +20,9 @@
 
 #include "MapPoint.h"
 #include "ORBmatcher.h"
-
+#include <iostream>
 #include<mutex>
-
+using namespace std;
 namespace ORB_SLAM2
 {
 
@@ -37,8 +37,9 @@ MapPoint::MapPoint(const cv::Mat &Pos, KeyFrame *pRefKF, Map* pMap):
 {
     Pos.copyTo(mWorldPos);
     mNormalVector = cv::Mat::zeros(3,1,CV_32F);
-
+    // cout<<"저도 이게 원조에요"<<endl;
     // MapPoints can be created from Tracking and Local Mapping. This mutex avoid conflicts with id.
+    
     unique_lock<mutex> lock(mpMap->mMutexPointCreation);
     mnId=nNextId++;
 }
@@ -64,7 +65,8 @@ MapPoint::MapPoint(const cv::Mat &Pos, Map* pMap, Frame* pFrame, const int &idxF
     mfMinDistance = mfMaxDistance/pFrame->mvScaleFactors[nLevels-1];
 
     pFrame->mDescriptors.row(idxF).copyTo(mDescriptor);
-
+    this->origin_prob =pFrame->mvProbs[idxF];
+    
     // MapPoints can be created from Tracking and Local Mapping. This mutex avoid conflicts with id.
     unique_lock<mutex> lock(mpMap->mMutexPointCreation);
     mnId=nNextId++;
@@ -101,7 +103,7 @@ void MapPoint::AddObservation(KeyFrame* pKF, size_t idx)
     if(mObservations.count(pKF))
         return;
     mObservations[pKF]=idx;
-
+    this->origin_prob =pKF->mvProbs[idx];
     if(pKF->mvuRight[idx]>=0)
         nObs+=2;
     else

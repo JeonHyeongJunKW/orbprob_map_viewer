@@ -47,7 +47,6 @@ int main(int argc, char **argv)
     vector<string> vstrImageRight;
     vector<double> vTimestamps;
     LoadImages(string(argv[3]), vstrImageLeft, vstrImageRight, vTimestamps);
-
     const int nImages = vstrImageLeft.size();
 
     // Create SLAM system. It initializes all system threads and gets ready to process frames.
@@ -125,7 +124,7 @@ int main(int argc, char **argv)
     SLAM.SaveTrajectoryKITTI("CameraTrajectory.txt");
     
     // Save keyframe trajectory/mask/left/right
-    SLAM.SaveTrajectoryOctoView("KeyFrame_traj.txt");
+    // SLAM.SaveTrajectoryOctoView("KeyFrame_traj.txt");
     
     return 0;
 }

@@ -2,6 +2,16 @@ build/*
 lib/*
 .vscode/
 src/python/__pycache__/runner.cpython-36.pyc
+src/python/__pycache__/*
 Thirdparty/DBoW2/build
 Thirdparty/g2o/build
 Vocabulary/ORBvoc.txt
+Examples/Monocular/*
+Examples/RGB-D/*
+Examples/Stereo/*
+!Examples/*/*.yaml
+!Examples/*/*.cc
+!Examples/Stereo/EuRoC_TimeStamps/*
+!Examples/Monocular/EuRoC_TimeStamps/*
+!Examples/RGB-D/associations/*
+!src/python/main.pth

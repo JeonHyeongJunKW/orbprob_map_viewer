@@ -11,7 +11,7 @@ using namespace cv;
 
 LDOD::LDOD()
 {
-    setenv("PYTHONPATH","./src/python/",1);
+    setenv("PYTHONPATH", "/home/jeon/orbprob_map_viewer/src/python", 1);//before initialize
     Py_Initialize();
     this->py_LODO_module = PyImport_ImportModule("runner");
 
@@ -39,8 +39,8 @@ LDOD::LDOD(int image_height, int image_width)
     {
         import_array(); 
     }
+    // import_array1(-1);
     this->py_LODO_module = PyImport_ImportModule("runner");
-    
     if(this->py_LODO_module == NULL)
     {
         cout<<"모듈 초기화에 실패하였습니다."<<endl;
@@ -69,12 +69,11 @@ LDOD::LDOD(int image_height, int image_width)
 
 Mat LDOD::GetLeftMask(Mat g_leftImage)
 {
-    const unsigned int nElem = this->image_height*this->image_width;//요소의 개수
+    const unsigned int nElem = this->image_height*this->image_width*3;//요소의 개수
     uchar* m = new uchar[nElem];//적절한 형태로 저장할 matrix를 만듭니다.
     std::memcpy(m, g_leftImage.data, nElem * sizeof(uchar));
-    npy_intp mdim[] = { this->image_height, this->image_width };//matrix차원
-    PyObject* gray_mat = PyArray_SimpleNewFromData(2, mdim, NPY_UINT8, (void*) m);//차원갯수, 각 원소수, 타입(uint8), 넣을 데이터 
-
+    npy_intp mdim[] = { this->image_height, this->image_width,3 };//matrix차원
+    PyObject* gray_mat = PyArray_SimpleNewFromData(3, mdim, NPY_UINT8, (void*) m);//차원갯수, 각 원소수, 타입(uint8), 넣을 데이터 
     //결과 마스크를 획득합니다.
     PyObject *pArgs;
     pArgs = PyTuple_New(1);//인자들을 모아서 저장할 변수
@@ -82,5 +81,6 @@ Mat LDOD::GetLeftMask(Mat g_leftImage)
     PyObject* mask_result = PyObject_CallObject(this->py_mask_func,pArgs);//결과를얻습니다.
     Mat return_gray(this->image_height, this->image_width, CV_8UC1, PyArray_DATA(mask_result));
     // imshow("mask",return_gray);
+    // waitKey(1);
     return return_gray;
 }

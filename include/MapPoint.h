@@ -87,6 +87,7 @@ public:
     long int mnFirstKFid;
     long int mnFirstFrame;
     int nObs;
+    float origin_prob =0;
 
     // Variables used by the tracking
     float mTrackProjX;

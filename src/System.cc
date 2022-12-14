@@ -498,27 +498,35 @@ void System::SaveTrajectoryOctoView(const string &filename)
 
     // Transform all keyframes so that the first keyframe is at the origin.
     // After a loop closure the first keyframe might not be at the origin.
-    //cv::Mat Two = vpKFs[0]->GetPoseInverse();
+    cv::Mat Two = vpKFs[0]->GetPoseInverse();
 
     ofstream f;
     f.open(filename.c_str());
     f << fixed;
-
-    for(size_t i=0; i<vpKFs.size(); i++)
+    list<ORB_SLAM2::KeyFrame*>::iterator lRit = mpTracker->mlpReferences.begin();
+    list<double>::iterator lT = mpTracker->mlFrameTimes.begin();
+    int i=0;
+    for(list<cv::Mat>::iterator lit=mpTracker->mlRelativeFramePoses.begin(), lend=mpTracker->mlRelativeFramePoses.end();lit!=lend;lit++, lRit++, lT++)
     {
-        KeyFrame* pKF = vpKFs[i];
+        ORB_SLAM2::KeyFrame* pKF = *lRit;
 
-       // pKF->SetPose(pKF->GetPose()*Two);
+        cv::Mat Trw = cv::Mat::eye(4,4,CV_32F);
 
-        if(pKF->isBad())
-            continue;
+        while(pKF->isBad())
+        {
+          //  cout << "bad parent" << endl;
+            Trw = Trw*pKF->mTcp;
+            pKF = pKF->GetParent();
+        }
 
-        cv::Mat R = pKF->GetRotation().t();
+        Trw = Trw*pKF->GetPose()*Two;
+
+        cv::Mat Tcw = (*lit)*Trw;
+        cv::Mat R = Tcw.rowRange(0,3).colRange(0,3).t();
+        cv::Mat t = -R*Tcw.rowRange(0,3).col(3);
         vector<float> q = Converter::toQuaternion(R);
-        cv::Mat t = pKF->GetCameraCenter();
         f << setprecision(6) << pKF->mTimeStamp << setprecision(7) << " " << t.at<float>(0) << " " << t.at<float>(1) << " " << t.at<float>(2)
           << " " << q[0] << " " << q[1] << " " << q[2] << " " << q[3] << endl;
-
         //해당 키프레임의 왼쪽/오른쪽 그림과 마스크를 저장합니다. 
         cv::Mat left = pKF->leftImage;
         cv::Mat right = pKF->rightImage;
@@ -526,6 +534,7 @@ void System::SaveTrajectoryOctoView(const string &filename)
         cv::imwrite("resultImage/"+to_string(i)+"left.jpg",left);
         cv::imwrite("resultImage/"+to_string(i)+"right.jpg",right);
         cv::imwrite("resultImage/"+to_string(i)+"prob.jpg",left_mask);
+        i++;
     }
 
     f.close();

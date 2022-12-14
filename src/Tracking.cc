@@ -145,6 +145,7 @@ Tracking::Tracking(System *pSys, ORBVocabulary* pVoc, FrameDrawer *pFrameDrawer,
         else
             mDepthMapFactor = 1.0f/mDepthMapFactor;
     }
+    // cout<<"hi"<<endl;
     pLDOD = new LDOD(fSettings["Camera.height"],fSettings["Camera.width"]);
 }
 
@@ -169,34 +170,34 @@ cv::Mat Tracking::GrabImageStereo(const cv::Mat &imRectLeft, const cv::Mat &imRe
     mImGray = imRectLeft;
     cv::Mat imGrayRight = imRectRight;
 
-    if(mImGray.channels()==3)
-    {
-        if(mbRGB)
-        {
-            cvtColor(mImGray,mImGray,CV_RGB2GRAY);
-            cvtColor(imGrayRight,imGrayRight,CV_RGB2GRAY);
-        }
-        else
-        {
-            cvtColor(mImGray,mImGray,CV_BGR2GRAY);
-            cvtColor(imGrayRight,imGrayRight,CV_BGR2GRAY);
-        }
-    }
-    else if(mImGray.channels()==4)
-    {
-        if(mbRGB)
-        {
-            cvtColor(mImGray,mImGray,CV_RGBA2GRAY);
-            cvtColor(imGrayRight,imGrayRight,CV_RGBA2GRAY);
-        }
-        else
-        {
-            cvtColor(mImGray,mImGray,CV_BGRA2GRAY);
-            cvtColor(imGrayRight,imGrayRight,CV_BGRA2GRAY);
-        }
-    }
+    // if(mImGray.channels()==3)
+    // {
+    //     if(mbRGB)
+    //     {
+    //         cvtColor(mImGray,mImGray,CV_RGB2GRAY);
+    //         cvtColor(imGrayRight,imGrayRight,CV_RGB2GRAY);
+    //     }
+    //     else
+    //     {
+    //         cvtColor(mImGray,mImGray,CV_BGR2GRAY);
+    //         cvtColor(imGrayRight,imGrayRight,CV_BGR2GRAY);
+    //     }
+    // }
+    // else if(mImGray.channels()==4)
+    // {
+    //     if(mbRGB)
+    //     {
+    //         cvtColor(mImGray,mImGray,CV_RGBA2GRAY);
+    //         cvtColor(imGrayRight,imGrayRight,CV_RGBA2GRAY);
+    //     }
+    //     else
+    //     {
+    //         cvtColor(mImGray,mImGray,CV_BGRA2GRAY);
+    //         cvtColor(imGrayRight,imGrayRight,CV_BGRA2GRAY);
+    //     }
+    // }
 
-    mCurrentFrame = Frame(mImGray,imGrayRight,timestamp,mpORBextractorLeft,mpORBextractorRight,mpORBVocabulary,mK,mDistCoef,mbf,mThDepth,this->pLDOD);
+    mCurrentFrame = Frame(imRectLeft,imRectRight,timestamp,mpORBextractorLeft,mpORBextractorRight,mpORBVocabulary,mK,mDistCoef,mbf,mThDepth,this->pLDOD);
 
     Track();
 

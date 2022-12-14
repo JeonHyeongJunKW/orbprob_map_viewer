@@ -77,13 +77,33 @@ Frame::Frame(const cv::Mat &imLeft, const cv::Mat &imRight, const double &timeSt
     int image_width = imLeft.cols;
 
     pLDOD = pLDOD_arg;//new LDOD(image_hegiht,image_width);
-    cv::Mat returnMask = pLDOD->GetLeftMask(imLeft);//cv::Mat::ones(imLeft.rows,imLeft.cols,CV_8UC1)*255;//
-    this->leftImage = imLeft;
-    this->rightImage = imRight;
+    Mat newLeft;
+    Mat newRight;
+    cv::Mat returnMask;
+    if(imLeft.channels()==3)
+    {
+        returnMask = pLDOD->GetLeftMask(imLeft);
+        this->leftImage = imLeft.clone();
+        this->rightImage = imRight.clone();
+        cvtColor(imLeft,newLeft,CV_BGR2GRAY);
+        cvtColor(imRight,newRight,CV_BGR2GRAY);
+    }
+    else
+    {
+        cv::Mat left_3;
+        cvtColor(imLeft,left_3,CV_GRAY2BGR);
+        returnMask = pLDOD->GetLeftMask(left_3);
+        this->leftImage = imLeft.clone();
+        this->rightImage = imRight.clone();
+        newLeft = imLeft.clone();
+        newRight =imRight.clone();
+    }
+    
+    
     // ORB extraction
     this->Frame_prob = returnMask;
-    thread threadLeft(&Frame::ExtractORB,this,0,imLeft);
-    thread threadRight(&Frame::ExtractORB,this,1,imRight);
+    thread threadLeft(&Frame::ExtractORB,this,0,newLeft);
+    thread threadRight(&Frame::ExtractORB,this,1,newRight);
     threadLeft.join();
     threadRight.join();
     // mvKeys, mDescriptors
