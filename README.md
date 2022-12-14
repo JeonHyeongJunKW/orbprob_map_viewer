@@ -37,6 +37,6 @@ Make a long-term map using ORB SLAM2[1] and LoopNet[2].
 
 cameras,” IEEE Transactions on Robotics, vol. 33, no. 5, pp. 1255–1262, 2017.
 
-[2]B. Bescos and J. M. Facil, J. Civera, and J. Neira, “DynaSLAM: Tracking, Mapping, and Inpainting in
+[2] H. Osman, N. Darwish and A. Bayoumi, "LoopNet: Where to Focus? Detecting Loop Closures in Dynamic
 
-dynamic Scenes,” IEEE Robotics andAutomation Letters, vol. 3, no. 4, pp. 4076–4083, oct 2018. 
+Scenes," in IEEE Robotics and Automation Letters, vol. 7, no. 2, pp. 2031-2038, April 2022
